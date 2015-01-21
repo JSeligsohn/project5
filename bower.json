@@ -1,0 +1,30 @@
+{
+  "name": "Project5",
+  "version": "0.0.0",
+  "authors": [
+    "Jonathan Seligsohn <jbseligsohn@gmail.com>"
+  ],
+  "description": "My Neighborhood Project for Udacity Frontend Nanodegree",
+  "main": "index.html",
+  "keywords": [
+    "Knockout",
+    "Bootstrap",
+    "Sass",
+    "Maps"
+  ],
+  "license": "MIT",
+  "homepage": "jonathanseligsohn.com",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "knockout": "3.2.0",
+    "bootstrap-sass-official": "3.3.3",
+    "jquery": "2.1.3"
+  }
+}
