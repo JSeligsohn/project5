@@ -26,6 +26,29 @@ module.exports = function(grunt) {
 			sass: {
 				files: '<%= project.assets %>/sass/{,*/}*.{scss,sass}',
 				tasks: ['sass:dev']
+			},
+			all: {
+				files: 'index.html',
+				options: {
+					livereload: true
+				}
+			}
+		},
+
+		express: {
+			all: {
+				options: {
+					port: 9000,
+					hostname: "0.0.0.0",
+					bases: ['app/'],
+					livereload: true
+				}
+			}
+		},
+
+		open: {
+			all: {
+				path: 'http://localhost:<%= express.all.options.port%>',
 			}
 		}
 
@@ -33,9 +56,15 @@ module.exports = function(grunt) {
 
 	grunt.loadNpmTasks('grunt-contrib-sass');
 	grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks('grunt-express');
+	grunt.loadNpmTasks('grunt-open');
 
 	grunt.registerTask('default', [
 		'watch'
-		
+	]);
+
+	grunt.registerTask('serve', [
+		'express',
+		'watch'
 	]);
 };
