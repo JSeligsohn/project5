@@ -11,3 +11,40 @@
     z-index:-1;
     opacity:1;
 }
+
+.list-view {
+	background: white;
+	opacity: .8;
+	position: fixed;
+	left: 0;
+	top: 300;
+	width: 300px;
+	height: 400px;
+	overflow: scroll;
+	li {
+		list-style: none;
+		cursor: pointer;
+	}
+}
+
+.photo-view {
+	background: white;
+	opacity: .8;
+	position: fixed;
+	right: 0;
+	top: 0;
+	width: 400px;
+
+	border: 2px solid grey;
+	ul {
+		overflow: scroll;
+		height: 300px;
+		width: 400px;
+	}
+	li {
+		list-style: none;
+	}
+	img {
+		opacity: 1;
+	}
+}

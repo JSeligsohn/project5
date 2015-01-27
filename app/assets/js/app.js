@@ -25,43 +25,136 @@
 
 // ko.applyBindings(viewModel);
 
-var viewModel = {
-	location: ko.observable("Philadelphia"),
+
+
+function viewModel() {
+	var self = this;
+	var map;
+	var infoWindow;
+	var newYork = new google.maps.LatLng(40.7776432, -73.9571934);
+	self.request = {
+		location: newYork,
+		radius: 10000,
+		query: 'park',
+		type: ['park']
+	};
+	self.location = ko.observable(newYork);
+	self.mapOptions = {
+    	zoom: 13,
+    	disableDefaultUI: true,
+    	center: newYork
+  	};
+  	self.markers = ko.observableArray([
+		// new marker([40.753596,-73.983233], 'Bryant Park'),
+  // 		new marker([40.742037,-73.987564], 'Madison Square Park'),
+  // 		new marker([40.782865,-73.965355], 'Central Park')
+  	]);
+	self.setMarkers = function() {
+		for (marker in self.markers()) {
+			console.log(marker);
+			mark = self.markers()[marker];
+			mark.setMap(map);
+			google.maps.event.addListener(mark, 'click', function() {
+				this.getPhotos();
+				this.highlightPlace();
+			});
+		}
+	};
+	self.initialize = function() {
+		infoWindow = new google.maps.InfoWindow();
+		map = new google.maps.Map(document.getElementById('map-canvas'), self.mapOptions);
+		var service = new google.maps.places.PlacesService(map);
+		// self.setMarkers();
+		service.textSearch(self.request, searchCallback);
+
+  	};
+
+  	self.currentPhoto = ko.observable({name: 'Nowhere'});
+
+	// //Get flickr photos from feed based on title of marker
+ //  	self.getPhotos = function(place) {
+ //  		// Jump to marker with title
+ //  		var tag = this.title;
+	// 	infoWindow.setContent(tag);
+	// 	infoWindow.open(map, this);
+ //  		map.panTo(this.position);
+ //  		self.currentPhoto({name: tag}); //update the photo list title
+	// 	$.ajax({
+	// 		url: "https://api.flickr.com/services/feeds/photos_public.gne" + "?format=json&tags=" + tag,
+	// 		dataType: "jsonp",
+	// 	})
+ //  	}
+
+  	self.photos = ko.observableArray();
+
+  	function searchCallback(results, status) {
+  		if (status == google.maps.places.PlacesServiceStatus.OK) {
+  			console.log('yeah!!');
+  			self.markers.removeAll();
+    		for (var i = 0; i < results.length; i++) {
+    			newPlace = results[i];
+    			console.log(newPlace);
+      			self.markers.push(new marker(newPlace.geometry.location, newPlace.name));
+    		}
+    		self.setMarkers();
+  		}
+  	}
+
+  	//Creates a new map marker with given position
+	function marker(pos, title) {
+		var myLatlng = pos;
+		console.log(myLatlng);
+		place = new google.maps.Marker({
+		  position: myLatlng,
+		  title: title,
+		});
+		//Get flickr photos from feed based on title of marker
+		place.getPhotos = function() { 		
+		// Jump to marker with title
+	  		var tag = title;
+	  		self.currentPhoto({name: tag}); //update the photo list title
+			$.ajax({
+				url: "https://api.flickr.com/services/feeds/photos_public.gne" + "?format=json&tags=" + tag,
+				dataType: "jsonp",
+			})
+		};
+		place.highlightPlace = function() {
+	  		map.panTo(this.position);
+			infoWindow.setContent(this.title);
+			infoWindow.open(map, this);
+  		}
+		return place;
+	}
+
+	google.maps.event.addDomListener(window, 'load', self.initialize);
+
 };
 
-viewModel.map = ko.computed(function() {
-	return this.src;
 
-}, viewModel);
+$(function() {
+	vm = new viewModel();
+	ko.applyBindings(vm);
+});
 
-ko.applyBindings(viewModel);
-
-var map;
-function initialize() {
-  var mapOptions = {
-    zoom: 13,
-    center: new google.maps.LatLng(40.7776432, -73.9571934)
-  };
-  map = new google.maps.Map(document.getElementById('map-canvas'),
-      mapOptions);
-
-  var markers = [
-  	marker([40.753596,-73.983233], map,'Bryant Park'),
-  	marker([40.742037,-73.987564], map, 'Madison Square Park'),
-  	marker([40.782865,-73.965355], map, 'Central Park')
-  ];
-  console.log(markers);
+function flickrPhoto(link) {
+	return {
+		url: link
+	};
 }
 
-//Creates a new map marker with given position
-function marker(pos, map, title) {
-	var myLatlng = new google.maps.LatLng(pos[0],pos[1]);
-	console.log(myLatlng);
-	return new google.maps.Marker({
-	  position: myLatlng,
-	  map: map,
-	  title: title
-	});
+//success function for flickr feed ajax request
+function jsonFlickrFeed(data) {
+	var photos = data.items; //returns json feed of photos
+	console.log(photos);
+	var photoLinks = [];
+	for (photo in photos) {
+		photoLinks.push(photos[photo].media.m); //get just the links from all photos
+	}
+	console.log(photoLinks);
+	vm.photos.removeAll();
+	for (var link in photoLinks) {
+		vm.photos.push(new flickrPhoto(photoLinks[link]));
+	}
 }
 
-google.maps.event.addDomListener(window, 'load', initialize);
+
