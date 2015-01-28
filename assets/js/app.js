@@ -40,8 +40,8 @@ function viewModel() {
   // 		new marker([40.742037,-73.987564], 'Madison Square Park'),
   // 		new marker([40.782865,-73.965355], 'Central Park')
   	]);
-  	self.place = ko.observable();
-  	self.geoLocation = function() {
+  	// self.place = ko.observable();
+  	// self.geoLocation = function() {
 	    // var address = self.location();
 	    // var blah;
 	    // geocoder.geocode( { 'address': address}, function(results, status) {
@@ -58,32 +58,32 @@ function viewModel() {
 	    //   	}
 	    // });
 	    // console.log(blah);
-	    return self.geoCodeMaker(self.location());
-  	};
+	  //   return self.geoCodeMaker(self.location());
+  	// };
 
   	self.geoCodeMaker = function(loc) {
 		geocoder.geocode( { 'address': loc}, function(results, status) {
 	    	if (status == google.maps.GeocoderStatus.OK) {
-	    		newPos = self.geolocation(results[0].geometry.location);
-	    		console.log(newPos);
+	    		self.geolocation(results[0].geometry.location);
 	        	map.setCenter(self.geolocation());
 	        	var marker = new google.maps.Marker({
 	            	map: map,
-	            	position: newPos
+	            	position: self.geolocation()
 	        	});
 	        	
 	      	} else {
 	        	alert("Geocode was not successful for the following reason: " + status);
 	      	}
 	    });
-		return self.geolocation();
+		// return self.geolocation();
   	};
 
   	self.mapOptions = ko.computed(function(){
   		return{
     		zoom: 13,
     		disableDefaultUI: true,
-    		center: newYork
+    		center: newYork,
+    		draggable: true
     	};
   	});
 
@@ -98,9 +98,8 @@ function viewModel() {
 
 	// For each marker, place it on map and retrieve photos from Flickr feed.
 	self.setMarkers = function() {
-		for (marker in self.markers()) {
-			console.log(marker);
-			mark = self.markers()[marker];
+		for (var i = 0; i < self.markers().length; i++) {
+			var mark = self.markers()[i];
 			mark.setMap(map);
 			google.maps.event.addListener(mark, 'click', function() {
 				this.getPhotos();
@@ -150,10 +149,10 @@ function viewModel() {
   		console.log('Searched!');
   		loc = self.location();
   		console.log(loc);
-  		blah = self.geoCodeMaker(loc);
-  		console.log(self.geolocation());
-  		neighborhood = self.geoCodeMaker(self.location());
-  		searchNeighborhood(neighborhood);
+  		self.geoCodeMaker(loc);
+  		setTimeout(function() {
+  			searchNeighborhood(self.geolocation());
+  		}, 500);
   	};
 
   	//Callback for neighborhood search
