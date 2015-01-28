@@ -50,6 +50,13 @@ module.exports = function(grunt) {
 			all: {
 				path: 'http://localhost:<%= express.all.options.port%>',
 			}
+		},
+
+		'gh-pages': {
+			options: {
+				base: 'app'
+			},
+			src: ['**']
 		}
 
 	});
@@ -58,6 +65,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-express');
 	grunt.loadNpmTasks('grunt-open');
+	grunt.loadNpmTasks('grunt-gh-pages');
 
 	grunt.registerTask('default', [
 		'watch'
