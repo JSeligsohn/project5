@@ -22,7 +22,10 @@
     <div class='container'>
       <div class="row">
         <div class="col-md-4">
-          <p><label>Location: <input type="text" data-bind="value: location"></label></p>
+          <form data-bind="submit: submitForm">
+            <p><label>Search: <input type="text" data-bind="textInput: location"></label></p>
+            <p><button class="btn btn-large btn-success" type="submit">Submit</button></p>
+          </form>
           <div class="list-view">
             <ul data-bind="foreach: markers">
               <li><span data-bind="text: title, click: function(){ getPhotos(); highlightPlace();}"></span></li>

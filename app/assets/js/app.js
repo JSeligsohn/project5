@@ -31,24 +31,72 @@ function viewModel() {
 	var self = this;
 	var map;
 	var infoWindow;
+	self.geolocation = ko.observable();
+	var geocoder = new google.maps.Geocoder();
 	var newYork = new google.maps.LatLng(40.7776432, -73.9571934);
-	self.request = {
-		location: newYork,
-		radius: 10000,
-		query: 'park',
-		type: ['park']
-	};
-	self.location = ko.observable(newYork);
-	self.mapOptions = {
-    	zoom: 13,
-    	disableDefaultUI: true,
-    	center: newYork
-  	};
+	self.location = ko.observable('New York');
   	self.markers = ko.observableArray([
 		// new marker([40.753596,-73.983233], 'Bryant Park'),
   // 		new marker([40.742037,-73.987564], 'Madison Square Park'),
   // 		new marker([40.782865,-73.965355], 'Central Park')
   	]);
+  	self.place = ko.observable();
+  	self.geoLocation = function() {
+	    // var address = self.location();
+	    // var blah;
+	    // geocoder.geocode( { 'address': address}, function(results, status) {
+	    // 	if (status == google.maps.GeocoderStatus.OK) {
+	    //     	map.setCenter(results[0].geometry.location);
+	    //     	var marker = new google.maps.Marker({
+	    //         	map: map,
+	    //         	position: results[0].geometry.location
+	    //     	});
+	    //     	blah = results[0].geometry.location;
+	        	
+	    //   	} else {
+	    //     	alert("Geocode was not successful for the following reason: " + status);
+	    //   	}
+	    // });
+	    // console.log(blah);
+	    return self.geoCodeMaker(self.location());
+  	};
+
+  	self.geoCodeMaker = function(loc) {
+		geocoder.geocode( { 'address': loc}, function(results, status) {
+	    	if (status == google.maps.GeocoderStatus.OK) {
+	    		newPos = self.geolocation(results[0].geometry.location);
+	    		console.log(newPos);
+	        	map.setCenter(self.geolocation());
+	        	var marker = new google.maps.Marker({
+	            	map: map,
+	            	position: newPos
+	        	});
+	        	
+	      	} else {
+	        	alert("Geocode was not successful for the following reason: " + status);
+	      	}
+	    });
+		return self.geolocation();
+  	};
+
+  	self.mapOptions = ko.computed(function(){
+  		return{
+    		zoom: 13,
+    		disableDefaultUI: true,
+    		center: newYork
+    	};
+  	});
+
+  	self.request = function(searchPlace){
+  		return {
+			location: searchPlace,
+			radius: 10000,
+			query: 'park',
+			type: ['park']
+		};
+	};
+
+	// For each marker, place it on map and retrieve photos from Flickr feed.
 	self.setMarkers = function() {
 		for (marker in self.markers()) {
 			console.log(marker);
@@ -60,15 +108,25 @@ function viewModel() {
 			});
 		}
 	};
-	self.initialize = function() {
+
+	//Gets the map started with places - defaults to New York
+	function initialize() {
+
 		infoWindow = new google.maps.InfoWindow();
-		map = new google.maps.Map(document.getElementById('map-canvas'), self.mapOptions);
-		var service = new google.maps.places.PlacesService(map);
-		// self.setMarkers();
-		service.textSearch(self.request, searchCallback);
+		map = new google.maps.Map(document.getElementById('map-canvas'), self.mapOptions());
+		searchNeighborhood(newYork);
 
   	};
 
+  	//Look for places of interest in the given neighborhood
+  	function searchNeighborhood(neighborhood) {
+  		var service = new google.maps.places.PlacesService(map);
+		// self.setMarkers();
+		console.log('Searching for neighborhood');
+		service.textSearch(self.request(neighborhood), searchCallback);
+  	};
+
+  	//Holds name of the current place who's photos are being shown
   	self.currentPhoto = ko.observable({name: 'Nowhere'});
 
 	// //Get flickr photos from feed based on title of marker
@@ -87,10 +145,23 @@ function viewModel() {
 
   	self.photos = ko.observableArray();
 
+  	//Fired when search bar is submitted. Goes to new neighborhood and updates map.
+  	self.submitForm = function() {
+  		console.log('Searched!');
+  		loc = self.location();
+  		console.log(loc);
+  		blah = self.geoCodeMaker(loc);
+  		console.log(self.geolocation());
+  		neighborhood = self.geoCodeMaker(self.location());
+  		searchNeighborhood(neighborhood);
+  	};
+
+  	//Callback for neighborhood search
   	function searchCallback(results, status) {
   		if (status == google.maps.places.PlacesServiceStatus.OK) {
   			console.log('yeah!!');
   			self.markers.removeAll();
+  			console.log('removed markers');
     		for (var i = 0; i < results.length; i++) {
     			newPlace = results[i];
     			console.log(newPlace);
@@ -118,6 +189,7 @@ function viewModel() {
 				dataType: "jsonp",
 			})
 		};
+		//When click on place, highlights it on map and shows infoWindow
 		place.highlightPlace = function() {
 	  		map.panTo(this.position);
 			infoWindow.setContent(this.title);
@@ -126,7 +198,7 @@ function viewModel() {
 		return place;
 	}
 
-	google.maps.event.addDomListener(window, 'load', self.initialize);
+	google.maps.event.addDomListener(window, 'load', initialize());
 
 };
 
@@ -136,6 +208,7 @@ $(function() {
 	ko.applyBindings(vm);
 });
 
+//Holds information about photos
 function flickrPhoto(link) {
 	return {
 		url: link
