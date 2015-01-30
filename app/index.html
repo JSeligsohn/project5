@@ -18,33 +18,80 @@
   </head>
   <body>
     <div id="map-canvas" class="bgimg"></div>
-    <h1>My Neighborhood</h1>
-    <div class='container'>
+    <div class='container-fluid'>
+      <div class='row'>
+        <div class='col-md-6'>
+            <h1 class="header-text">Parks in My Neighborhood</h1>
+        </div>
+      </div>
       <div class="row">
         <div class="col-md-4">
-          <form data-bind="submit: submitForm">
-            <p><label>Search: <input type="text" data-bind="textInput: location"></label></p>
-            <p><button class="btn btn-large btn-success" type="submit">Submit</button></p>
+          <form class="search-bar" data-bind="submit: submitForm">
+            <p class="search-text"><input type="text" data-bind="textInput: location"></p>
+            <p class="search-btn"><button class="btn btn-large btn-success" type="submit"><span class='glyphicon glyphicon-search'></span>  Search</button></p>
           </form>
           <div class="list-view">
             <ul data-bind="foreach: markers">
-              <li><span data-bind="text: title, click: function(){ getPhotos(); highlightPlace();}"></span></li>
+              <li data-bind="click: function(){ getPhotos(); highlightPlace(); output();}"><span data-bind="text: title"></span> <span data-bind="text: hasPhotos">++++</span> </li>
             </ul>
+            <div id="js-roll-up" class="roll-up"><span class='glyphicon glyphicon-triangle-top'></span></div>
           </div>
-          <div class='photo-view'>
-            <h2>Photos of <span data-bind="text: currentPhoto().name"></span></h2>
-            <ul data-bind="foreach: photos">
-              <li><img data-bind="attr: {src: url}"></li>
-            </ul>
-          </div>
-        </div>
         </div>
       </div>
+
     </div>
+      <div class='photo-view'>
+        <span id="js-photo-roll" class='photo-icon'><span class="glyphicon glyphicon-picture"></span></span>
+        <h3 class='photo-header'>Photos of <span data-bind="text: currentPhoto().name"></span></h3>
+        <p class="subtitle">Courtesy of FlickR</p>
+
+
+        <div id="carousel-example-generic" class="carousel slide" data-ride="xcarousel">
+          <!-- Indicators -->
+          <ol class="carousel-indicators">
+            <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
+            <li data-target="#carousel-example-generic" data-slide-to="1"></li>
+            <li data-target="#carousel-example-generic" data-slide-to="2"></li>
+          </ol>
+
+
+                       <!-- Wrapper for slides -->
+            <div class="carousel-inner" data-bind="foreach: photos" role="listbox">
+              <div class="item" data-bind="css: { active: $index() == 0 }">
+                <div class="photo-holder">
+                  <img class="photo img-responsive" data-bind="attr: {src: url, alt: name}">
+                    <div class="carousel-caption">
+                      <span data-bind="text: $parent.currentPhoto().name"></span>
+                    </div>
+                </div>
+              </div>
+            </div>
+
+                             <!-- Controls -->
+              <a class="left carousel-control" href="#carousel-example-generic" role="button" data-slide="prev">
+                <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                <span class="sr-only">Previous</span>
+              </a>
+              <a class="right carousel-control" href="#carousel-example-generic" role="button" data-slide="next">
+                <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                <span class="sr-only">Next</span>
+              </a>
+                        
+          </div>
+
+
+
+
+  <!--             <ul data-bind="foreach: photos">
+          <li><img data-bind="attr: {src: url}"></li>
+        </ul> -->
+        </div>
+
 
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="bower_components/jquery-ui/jquery-ui.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap.min.js"></script>
     <script src="bower_components/knockout/dist/knockout.js" type="text/javascript"></script>

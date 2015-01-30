@@ -312,8 +312,8 @@ th {
 }
 @font-face {
   font-family: 'Glyphicons Halflings';
-  src: url("../fonts/bootstrap/glyphicons-halflings-regular.eot");
-  src: url("../fonts/bootstrap/glyphicons-halflings-regular.eot?#iefix") format("embedded-opentype"), url("../fonts/bootstrap/glyphicons-halflings-regular.woff2") format("woff2"), url("../fonts/bootstrap/glyphicons-halflings-regular.woff") format("woff"), url("../fonts/bootstrap/glyphicons-halflings-regular.ttf") format("truetype"), url("../fonts/bootstrap/glyphicons-halflings-regular.svg#glyphicons_halflingsregular") format("svg");
+  src: url("../../bower_components/bootstrap-sass-official/assets/fonts/bootstrap/glyphicons-halflings-regular.eot");
+  src: url("../../bower_components/bootstrap-sass-official/assets/fonts/bootstrap/glyphicons-halflings-regular.eot?#iefix") format("embedded-opentype"), url("../../bower_components/bootstrap-sass-official/assets/fonts/bootstrap/glyphicons-halflings-regular.woff2") format("woff2"), url("../../bower_components/bootstrap-sass-official/assets/fonts/bootstrap/glyphicons-halflings-regular.woff") format("woff"), url("../../bower_components/bootstrap-sass-official/assets/fonts/bootstrap/glyphicons-halflings-regular.ttf") format("truetype"), url("../../bower_components/bootstrap-sass-official/assets/fonts/bootstrap/glyphicons-halflings-regular.svg#glyphicons_halflingsregular") format("svg");
 }
 .glyphicon {
   position: relative;
@@ -7117,6 +7117,21 @@ button.close {
   }
 }
 /*My Styles*/
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: none;
+  background-color: #4cae4c;
+  -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
+body {
+  overflow: hidden;
+}
+
 .bgimg {
   position: absolute;
   top: 0;
@@ -7127,29 +7142,88 @@ button.close {
   opacity: 1;
 }
 
+.header-text {
+  background-color: #4cae4c;
+  opacity: .8;
+  width: 100%;
+  padding: 10px;
+}
+
+.search-bar {
+  background: white;
+  position: relative;
+  width: 300px;
+  border: 1px solid #4cae4c;
+}
+
+.search-text {
+  float: left;
+}
+.search-text input {
+  border: none;
+  padding: .5em;
+}
+
+.search-btn {
+  margin: 0;
+}
+.search-btn button {
+  margin-left: 28px;
+  position: relative;
+  right: -110px;
+  border-radius: 0;
+  padding: 7px 12px 6px 12px;
+}
+
 .list-view {
   background: white;
-  opacity: .8;
-  position: fixed;
+  position: relative;
+  box-shadow: 2px 2px 3px #E4E4E4;
   left: 0;
-  top: 300;
+  top: 0;
+  width: 300px;
+}
+.list-view ul {
+  -webkit-padding-start: 0;
+  -webkit-margin-after: 0;
   width: 300px;
   height: 400px;
   overflow: scroll;
+  overflow-x: hidden;
+}
+.list-view ul.rolled-up {
+  height: 80px;
 }
 .list-view li {
   list-style: none;
   cursor: pointer;
+  padding: 2em 0;
+  border-bottom: 1px solid #DDD;
+}
+.list-view li span {
+  margin-left: 20px;
+}
+.list-view li:hover {
+  background: #F5F5F5;
+}
+
+.roll-up {
+  text-align: center;
+  background-color: #4cae4c;
+}
+.roll-up span {
+  font-size: 2em;
+  color: white;
 }
 
 .photo-view {
   background: white;
-  opacity: .8;
-  position: fixed;
+  position: absolute;
   right: 0;
-  top: 0;
+  bottom: -450px;
   width: 400px;
   border: 2px solid grey;
+  box-shadow: #333 0 0 5px;
 }
 .photo-view ul {
   overflow: scroll;
@@ -7161,6 +7235,52 @@ button.close {
 }
 .photo-view img {
   opacity: 1;
+}
+.photo-view.photos-visible {
+  bottom: 0;
+}
+
+.photo-icon {
+  position: absolute;
+  top: -65px;
+  font-size: 45px;
+  background: #4cae4c;
+  color: white;
+  padding: 0 5px;
+  left: 175px;
+}
+
+.photo-header {
+  text-align: center;
+}
+.photo-header span {
+  display: block;
+}
+
+.photo-holder {
+  width: 300px;
+  height: 300px;
+  margin: 0 auto;
+  margin-top: 30px;
+}
+
+.photo {
+  margin: 0 auto;
+}
+
+.carousel-control {
+  background-image: none;
+}
+.carousel-control .glyphicon {
+  color: #4cae4c;
+}
+.carousel-control.left, .carousel-control.right {
+  background-image: none;
+}
+
+.subtitle {
+  text-align: center;
+  font-style: italic;
 }
 
 /*# sourceMappingURL=style.css.map */

@@ -114,6 +114,7 @@ function viewModel() {
 		infoWindow = new google.maps.InfoWindow();
 		map = new google.maps.Map(document.getElementById('map-canvas'), self.mapOptions());
 		searchNeighborhood(newYork);
+		// self.photos.push['assets/images/photo-holder.png'];
 
   	};
 
@@ -142,7 +143,7 @@ function viewModel() {
 	// 	})
  //  	}
 
-  	self.photos = ko.observableArray();
+  	self.photos = ko.observableArray([new flickrPhoto('assets/images/photo-holder.png')]);
 
   	//Fired when search bar is submitted. Goes to new neighborhood and updates map.
   	self.submitForm = function() {
@@ -174,10 +175,13 @@ function viewModel() {
 	function marker(pos, title) {
 		var myLatlng = pos;
 		console.log(myLatlng);
-		place = new google.maps.Marker({
+		var place = new google.maps.Marker({
 		  position: myLatlng,
 		  title: title,
+		  icon: "assets/images/tree.png",
+		  hasPhotos: ko.observable()
 		});
+		// place.hasPhotos = ko.observable(false);
 		//Get flickr photos from feed based on title of marker
 		place.getPhotos = function() { 		
 		// Jump to marker with title
@@ -185,15 +189,48 @@ function viewModel() {
 	  		self.currentPhoto({name: tag}); //update the photo list title
 			$.ajax({
 				url: "https://api.flickr.com/services/feeds/photos_public.gne" + "?format=json&tags=" + tag,
-				dataType: "jsonp",
+				dataType: "jsonp"
 			})
 		};
+		place.output = function() {
+			console.log("Has Photos?" + place.hasPhotos());
+		}
 		//When click on place, highlights it on map and shows infoWindow
 		place.highlightPlace = function() {
 	  		map.panTo(this.position);
-			infoWindow.setContent(this.title);
+			infoWindow.setContent("<div style='height: 40px; text-align: center'>" + this.title + "</div>");
 			infoWindow.open(map, this);
   		}
+  		// place.getPhotos();
+  		// setTimeout(function() {console.log(place.hasPhotos)}, 100);
+  		console.log(place.hasPhotos());
+  		//success function for flickr feed ajax request
+		jsonFlickrFeed = function (data) {
+			var photos = data.items; //returns json feed of photos
+			if (data.items.length > 0) {
+				place.hasPhotos(true);
+			}
+			else {
+				place.hasPhotos(false);
+			}
+			console.log("Do we have?" + place.hasPhotos());
+			console.log(photos);
+			var photoLinks = [];
+			for (var i = 0; i < photos.length; i++) {
+				photoLinks.push(photos[i].media.m); //get just the links from all photos
+			}
+			console.log(photoLinks);
+			self.photos.removeAll();
+			if (photoLinks.length == 0) {
+				self.photos.push(new flickrPhoto('assets/images/photo-holder.png'));
+				place.hasPhotos(false);
+			}
+			else {
+				for (var link in photoLinks) {
+					self.photos.push(new flickrPhoto(photoLinks[link]));
+				}
+			}
+		};
 		return place;
 	}
 
@@ -214,19 +251,16 @@ function flickrPhoto(link) {
 	};
 }
 
-//success function for flickr feed ajax request
-function jsonFlickrFeed(data) {
-	var photos = data.items; //returns json feed of photos
-	console.log(photos);
-	var photoLinks = [];
-	for (photo in photos) {
-		photoLinks.push(photos[photo].media.m); //get just the links from all photos
-	}
-	console.log(photoLinks);
-	vm.photos.removeAll();
-	for (var link in photoLinks) {
-		vm.photos.push(new flickrPhoto(photoLinks[link]));
-	}
-}
+//Roll up
+
+$('#js-roll-up').click(function() {
+	$('.list-view ul').toggleClass('rolled-up', 400, "easeInOutSine");
+	$('#js-roll-up span').toggleClass('glyphicon-triangle-top').toggleClass('glyphicon-triangle-bottom');
+});
+
+$('#js-photo-roll').click(function() {
+	$('.photo-view').toggleClass('photos-visible', 400, "easeInOutSine");
+})
+
 
 
