@@ -1,32 +1,3 @@
-
-// function friend(name) {
-// 	return {
-// 		name: ko.observable(name),
-// 		isOnTwitter: ko.observable(false),
-// 		twitterName: ko.observable(),
-// 		remove: function() {
-// 			viewModel.friends.remove(this);
-// 		}
-// 	};
-// }
-
-// var viewModel = {
-// 	firstName: ko.observable("Bert"),
-// 	lastName: ko.observable("Simmons"),
-// 	friends: ko.observableArray([new friend("Steve"), new friend("Max")]),
-// 	addFriend: function() {
-// 		this.friends.push(new friend("Another"));
-// 	}
-// };
-
-// viewModel.fullName = ko.dependentObservable(function() {
-// 	return this.firstName() + " " + this.lastName();
-// }, viewModel);
-
-// ko.applyBindings(viewModel);
-
-
-
 function viewModel() {
 	var self = this;
 	var map;
@@ -61,6 +32,8 @@ function viewModel() {
 	  //   return self.geoCodeMaker(self.location());
   	// };
 
+  	// Set map to searched location 
+  	// @param loc is search string, which is converted into Lat-Long
   	self.geoCodeMaker = function(loc) {
 		geocoder.geocode( { 'address': loc}, function(results, status) {
 	    	if (status == google.maps.GeocoderStatus.OK) {
@@ -78,6 +51,7 @@ function viewModel() {
 		// return self.geolocation();
   	};
 
+  	// Options for Google Map
   	self.mapOptions = ko.computed(function(){
   		return{
     		zoom: 13,
@@ -87,6 +61,7 @@ function viewModel() {
     	};
   	});
 
+  	// Function to search for place and nearby parks
   	self.request = function(searchPlace){
   		return {
 			location: searchPlace,
@@ -143,6 +118,7 @@ function viewModel() {
 	// 	})
  //  	}
 
+ 	// Stores the photos to show; default is a placeholder photo
   	self.photos = ko.observableArray([new flickrPhoto('assets/images/photo-holder.png')]);
 
   	//Fired when search bar is submitted. Goes to new neighborhood and updates map.
@@ -188,9 +164,19 @@ function viewModel() {
 	  		var tag = title;
 	  		self.currentPhoto({name: tag}); //update the photo list title
 			$.ajax({
-				url: "https://api.flickr.com/services/feeds/photos_public.gne" + "?format=json&tags=" + tag,
-				dataType: "jsonp"
-			})
+				url: "https://api.flickr.com/services/feeds/photos_public.gne" + "?jsoncallback=?&format=json&tags=" + tag,
+				dataType: "jsonp",
+				success: jsonFlickrFeed,
+				timeout: 2000, //Because we're making a JSONP call we can't do normal error handling so we use a timeout instead
+				error: function (jqXHR, textStatus, errorThrown){
+    				if(textStatus === "timeout") {
+    					self.photos.removeAll(); //Remove photos from feed and place image holder for no photos
+    					self.photos.push(new flickrPhoto('assets/images/photo-holder.png'));
+        				console.log("Could not connect to Flickr API");
+    				}
+				}
+			});
+
 		};
 		place.output = function() {
 			console.log("Has Photos?" + place.hasPhotos());
