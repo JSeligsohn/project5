@@ -60,12 +60,12 @@ module.exports = function(grunt) {
 		},
 
 		copy: {
-	      build: {
-	        cwd: 'app/assets',
-	        src: [ '**', '!**/sass', '!**/*.scss' ],
-	        dest: 'app/build',
-	        expand: true
-	      },
+			build: {
+				cwd: 'app/assets',
+				src: [ '**', '!**/sass', '!**/*.scss' ],
+				dest: 'app/build',
+				expand: true
+			},
 	    },
 
 	    clean: {

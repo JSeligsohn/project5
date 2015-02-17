@@ -1,5 +1,5 @@
 ##How to use:
-You can view the live project at [jonathanseligsohn.com/project5/build].
+You can view the live project at [jonathanseligsohn.com/project5/build](jonathanseligsohn.com/project5/build).
 Search for your favorite neighborhood. A list of nearby parks will appear.
 You can view photos of a particular park by clicking on the park in the list or map, and then click on the "photos" icon.
 
