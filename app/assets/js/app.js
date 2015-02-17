@@ -6,31 +6,8 @@ function viewModel() {
 	var geocoder = new google.maps.Geocoder();
 	var newYork = new google.maps.LatLng(40.7776432, -73.9571934);
 	self.location = ko.observable('New York');
-  	self.markers = ko.observableArray([
-		// new marker([40.753596,-73.983233], 'Bryant Park'),
-  // 		new marker([40.742037,-73.987564], 'Madison Square Park'),
-  // 		new marker([40.782865,-73.965355], 'Central Park')
-  	]);
-  	// self.place = ko.observable();
-  	// self.geoLocation = function() {
-	    // var address = self.location();
-	    // var blah;
-	    // geocoder.geocode( { 'address': address}, function(results, status) {
-	    // 	if (status == google.maps.GeocoderStatus.OK) {
-	    //     	map.setCenter(results[0].geometry.location);
-	    //     	var marker = new google.maps.Marker({
-	    //         	map: map,
-	    //         	position: results[0].geometry.location
-	    //     	});
-	    //     	blah = results[0].geometry.location;
-	        	
-	    //   	} else {
-	    //     	alert("Geocode was not successful for the following reason: " + status);
-	    //   	}
-	    // });
-	    // console.log(blah);
-	  //   return self.geoCodeMaker(self.location());
-  	// };
+  	self.markers = ko.observableArray([]);
+  	self.currentPlace = ko.observable();
 
   	// Set map to searched location 
   	// @param loc is search string, which is converted into Lat-Long
@@ -76,14 +53,20 @@ function viewModel() {
 		for (var i = 0; i < self.markers().length; i++) {
 			var mark = self.markers()[i];
 			mark.setMap(map);
+			mark.setAnimation(null);
 			google.maps.event.addListener(mark, 'click', function() {
+				self.currentPlace(null);
+				self.currentPlace(this);
 				this.getPhotos();
 				this.highlightPlace();
+				this.toggleBounce();
 				//When clicking on marker, roll-up the listview if it's open
 				conditional_roll_up();
 			});
 		}
 	};
+
+
 
 	//Gets the map started with places - defaults to New York
 	function initialize() {
@@ -105,20 +88,6 @@ function viewModel() {
 
   	//Holds name of the current place who's photos are being shown
   	self.currentPhoto = ko.observable({name: 'Nowhere'});
-
-	// //Get flickr photos from feed based on title of marker
- //  	self.getPhotos = function(place) {
- //  		// Jump to marker with title
- //  		var tag = this.title;
-	// 	infoWindow.setContent(tag);
-	// 	infoWindow.open(map, this);
- //  		map.panTo(this.position);
- //  		self.currentPhoto({name: tag}); //update the photo list title
-	// 	$.ajax({
-	// 		url: "https://api.flickr.com/services/feeds/photos_public.gne" + "?format=json&tags=" + tag,
-	// 		dataType: "jsonp",
-	// 	})
- //  	}
 
  	// Stores the photos to show; default is a placeholder photo
   	self.photos = ko.observableArray([new flickrPhoto('assets/images/photo-holder.png')]);
@@ -218,7 +187,18 @@ function viewModel() {
 					self.photos.push(new flickrPhoto(photoLinks[link]));
 				}
 			}
-		};
+		}
+		//Animate the marker when clicked or stop if currently animated
+		place.toggleBounce = function() {
+			for (var i = 0; i < self.markers().length; i++) {
+				var mark = self.markers()[i];
+		  		if (mark.getAnimation() != null) {
+		  			//Stop animating previously selected marker
+		    		mark.setAnimation(null);
+		  		}
+		  	}
+		  	this.setAnimation(google.maps.Animation.BOUNCE);
+		}
 		return place;
 	}
 
@@ -239,13 +219,13 @@ function flickrPhoto(link) {
 	};
 }
 
+/** Front-end Design Code **/
 
 //Toggle list view roll-up
 function roll_up() {
 	$('.list-view ul').toggleClass('rolled-up', 400, "easeInOutSine");
 	$('#js-roll-up span').toggleClass('glyphicon-triangle-top').toggleClass('glyphicon-triangle-bottom');
 }
-
 
 //Call roll-up for list-view when triangle is clicked
 $('#js-roll-up').click(function() {

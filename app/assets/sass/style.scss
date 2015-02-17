@@ -96,6 +96,9 @@ body {
 			background: #F5F5F5;
 		} 
 	}
+	.selectedPlace {
+		background-color: lighten($green, 35%);
+	}
 }
 
 .roll-up {

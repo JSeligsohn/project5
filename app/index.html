@@ -33,7 +33,7 @@
           </form>
           <div class="list-view">
             <ul data-bind="foreach: markers">
-              <li data-bind="click: function(){ getPhotos(); highlightPlace(); conditional_roll_up();}"><p data-bind="text: title"></p></li>
+              <li data-bind="click: function(){ toggleBounce(); getPhotos(); highlightPlace(); conditional_roll_up(); $root.currentPlace($data); }, css: {selectedPlace: $data == $root.currentPlace()}"><p data-bind="text: title"></p></li>
             </ul>
             <div id="js-roll-up" class="roll-up"><span class='glyphicon glyphicon-triangle-top'></span></div>
           </div>

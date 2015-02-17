@@ -7218,6 +7218,9 @@ body {
 .list-view li:hover {
   background: #F5F5F5;
 }
+.list-view .selectedPlace {
+  background-color: #c6e6c6;
+}
 
 .roll-up {
   text-align: center;
