@@ -7141,6 +7141,12 @@ body {
   z-index: 0;
 }
 
+.infoWindow {
+  height: 100%;
+  width: 150px;
+  text-align: center;
+}
+
 .header-text {
   background-color: #4cae4c;
   opacity: .8;
@@ -7161,7 +7167,11 @@ body {
 
 .search-text {
   border: none;
+  width: 50%;
   padding: .5em;
+}
+.search-text:focus {
+  outline: none;
 }
 
 .btn-search {
@@ -7176,16 +7186,11 @@ body {
   box-shadow: 2px 2px 3px #E4E4E4;
   left: 0;
   top: 0;
-  width: 80%;
+  width: 30%;
 }
-@media screen and (max-width: 992px) {
+@media screen and (max-width: 600px) {
   .list-view {
-    width: 65%;
-  }
-}
-@media screen and (max-width: 768px) {
-  .list-view {
-    width: 45%;
+    top: 175px;
   }
 }
 .list-view ul {
@@ -7196,8 +7201,13 @@ body {
   overflow: scroll;
   overflow-x: hidden;
 }
+@media screen and (max-width: 600px) {
+  .list-view ul {
+    height: 200px;
+  }
+}
 .list-view ul.rolled-up {
-  height: 80px;
+  height: 100px;
 }
 .list-view li {
   list-style: none;
@@ -7205,18 +7215,40 @@ body {
   padding: 2em 0;
   border-bottom: 1px solid #DDD;
 }
+@media screen and (max-width: 768px) {
+  .list-view li {
+    padding: 2em 1em;
+  }
+}
+.list-view li h4 {
+  margin-left: 20px;
+}
+@media screen and (max-width: 768px) {
+  .list-view li h4 {
+    font-size: 14px;
+    margin-left: 0;
+    text-align: center;
+  }
+}
 .list-view li p {
   margin-left: 20px;
   margin-bottom: 0;
 }
 @media screen and (max-width: 768px) {
   .list-view li p {
+    font-size: 10px;
     margin-left: 0;
     text-align: center;
   }
 }
 .list-view li:hover {
   background: #F5F5F5;
+}
+.list-view .selectedPlace {
+  background-color: #c6e6c6;
+}
+.list-view .selectedPlace:hover {
+  background-color: #c6e6c6;
 }
 
 .roll-up {
