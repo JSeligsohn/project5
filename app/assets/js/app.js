@@ -61,7 +61,7 @@ function viewModel() {
 				this.highlightPlace();
 				this.toggleBounce();
 				//When clicking on marker, roll-up the listview if it's open
-				conditional_roll_up();
+				// conditional_roll_up();
 			});
 		}
 	};
@@ -112,14 +112,14 @@ function viewModel() {
     		for (var i = 0; i < results.length; i++) {
     			newPlace = results[i];
     			console.log(newPlace);
-      			self.markers.push(new marker(newPlace.geometry.location, newPlace.name));
+      			self.markers.push(new marker(newPlace.geometry.location, newPlace.name, newPlace.formatted_address));
     		}
     		self.setMarkers();
   		}
   	}
 
   	//Creates a new map marker with given position
-	function marker(pos, title) {
+	function marker(pos, title, address) {
 		var myLatlng = pos;
 		console.log(myLatlng);
 		var place = new google.maps.Marker({
@@ -128,7 +128,7 @@ function viewModel() {
 		  icon: "assets/images/tree.png",
 		  hasPhotos: ko.observable()
 		});
-		// place.hasPhotos = ko.observable(false);
+		place.address = address;
 		//Get flickr photos from feed based on title of marker
 		place.getPhotos = function() { 		
 		// Jump to marker with title
@@ -154,8 +154,9 @@ function viewModel() {
 		}
 		//When click on place, highlights it on map and shows infoWindow
 		place.highlightPlace = function() {
+			console.log(this.position);
 	  		map.panTo(this.position);
-			infoWindow.setContent("<div style='height: 40px; text-align: center'>" + this.title + "</div>");
+			infoWindow.setContent("<div class='infoWindow'><h5>" + this.title + "</h5><p>" + this.address + "</p></div>");
 			infoWindow.open(map, this);
   		}
   		// place.getPhotos();
@@ -233,11 +234,11 @@ $('#js-roll-up').click(function() {
 });
 
 //Conditional roll-up for when it's rolled-down 
-function conditional_roll_up() {
-	if (!$('.list-view ul').hasClass('rolled-up')) {
-		roll_up();
-	}
-}
+// function conditional_roll_up() {
+// 	if (!$('.list-view ul').hasClass('rolled-up')) {
+// 		roll_up();
+// 	}
+// }
 
 //Toggle photo viewer visible
 $('#js-photo-roll').click(function() {
@@ -252,5 +253,8 @@ $(document).ready(function() {
 	}
 });
 
+$('#js-search-bar').click(function() {
+	$('#js-search-bar input').focus();
+});
 
 

@@ -26,21 +26,24 @@
       </div>
       <div class="row">
         <div class="col-md-5 col-sm-5 col-xs-12">
-          <form class="search-bar" data-bind="submit: submitForm">
+          <form id="js-search-bar" class="search-bar" data-bind="submit: submitForm">
               <button class="btn btn-large btn-success btn-search" type="submit"><span class='glyphicon glyphicon-search'></span>  <span class="hidden-xs">Search</span></button>  
               <input class="search-text" type="text" data-bind="textInput: location">
           
           </form>
-          <div class="list-view">
-            <ul data-bind="foreach: markers">
-              <li data-bind="click: function(){ toggleBounce(); getPhotos(); highlightPlace(); conditional_roll_up(); $root.currentPlace($data); }, css: {selectedPlace: $data == $root.currentPlace()}"><p data-bind="text: title"></p></li>
-            </ul>
-            <div id="js-roll-up" class="roll-up"><span class='glyphicon glyphicon-triangle-top'></span></div>
-          </div>
         </div>
       </div>
 
-    </div>
+      <div class="list-view">
+        <ul data-bind="foreach: markers">
+          <li data-bind="click: function(){ toggleBounce(); getPhotos(); highlightPlace(); $root.currentPlace($data); }, css: {selectedPlace: $data == $root.currentPlace()}">
+            <h4 data-bind="text: title"></h4>
+            <p data-bind="text: address"></p>
+          </li>
+        </ul>
+        <div id="js-roll-up" class="roll-up"><span class='glyphicon glyphicon-triangle-top'></span></div>
+      </div>
+
       <div class='photo-view'>
         <span id="js-photo-roll" class='photo-icon'><span class="glyphicon glyphicon-picture"></span></span>
         <h3 class='photo-header'>Photos of <span data-bind="text: currentPhoto().name"></span></h3>
