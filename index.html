@@ -25,14 +25,15 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-5 col-sm-5 col-xs-12">
           <form class="search-bar" data-bind="submit: submitForm">
-            <p class="search-text"><input type="text" data-bind="textInput: location"></p>
-            <p class="search-btn"><button class="btn btn-large btn-success" type="submit"><span class='glyphicon glyphicon-search'></span>  Search</button></p>
+              <button class="btn btn-large btn-success btn-search" type="submit"><span class='glyphicon glyphicon-search'></span>  <span class="hidden-xs">Search</span></button>  
+              <input class="search-text" type="text" data-bind="textInput: location">
+          
           </form>
           <div class="list-view">
             <ul data-bind="foreach: markers">
-              <li data-bind="click: function(){ getPhotos(); highlightPlace(); output();}"><span data-bind="text: title"></span> <span data-bind="text: hasPhotos">++++</span> </li>
+              <li data-bind="click: function(){ getPhotos(); highlightPlace(); conditional_roll_up();}"><p data-bind="text: title"></p></li>
             </ul>
             <div id="js-roll-up" class="roll-up"><span class='glyphicon glyphicon-triangle-top'></span></div>
           </div>
@@ -79,12 +80,6 @@
                         
           </div>
 
-
-
-
-  <!--             <ul data-bind="foreach: photos">
-          <li><img data-bind="attr: {src: url}"></li>
-        </ul> -->
         </div>
 
 
