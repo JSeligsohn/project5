@@ -21,11 +21,15 @@ function viewModel() {
 	            	position: self.geolocation()
 	        	});
 	        	
-	      	} else {
+	      	} else if(status == google.maps.GeocoderStatus.ZERO_RESULTS) {
+	      		console.log("Zero results were found. Try searching for a different location.");
+	      		alert("Zero results were found. Try searching for a different location.");
+	      	}
+	      	else {
+	        	console.log("Geocode was not successful for the following reason: " + status);
 	        	alert("Geocode was not successful for the following reason: " + status);
 	      	}
 	    });
-		// return self.geolocation();
   	};
 
   	// Options for Google Map
@@ -60,30 +64,24 @@ function viewModel() {
 				this.getPhotos();
 				this.highlightPlace();
 				this.toggleBounce();
-				//When clicking on marker, roll-up the listview if it's open
-				// conditional_roll_up();
 			});
 		}
 	};
 
-
-
 	//Gets the map started with places - defaults to New York
 	function initialize() {
-
 		infoWindow = new google.maps.InfoWindow();
 		map = new google.maps.Map(document.getElementById('map-canvas'), self.mapOptions());
 		searchNeighborhood(newYork);
-		// self.photos.push['assets/images/photo-holder.png'];
-
   	};
 
   	//Look for places of interest in the given neighborhood
   	function searchNeighborhood(neighborhood) {
-  		var service = new google.maps.places.PlacesService(map);
-		// self.setMarkers();
-		console.log('Searching for neighborhood');
-		service.textSearch(self.request(neighborhood), searchCallback);
+  		if (neighborhood) {
+  			var service = new google.maps.places.PlacesService(map);
+			console.log('Searching for neighborhood...');
+			service.textSearch(self.request(neighborhood), searchCallback);
+  		}
   	};
 
   	//Holds name of the current place who's photos are being shown
@@ -94,7 +92,7 @@ function viewModel() {
 
   	//Fired when search bar is submitted. Goes to new neighborhood and updates map.
   	self.submitForm = function() {
-  		console.log('Searched!');
+  		console.log('Searching...');
   		loc = self.location();
   		console.log(loc);
   		self.geoCodeMaker(loc);
@@ -106,15 +104,18 @@ function viewModel() {
   	//Callback for neighborhood search
   	function searchCallback(results, status) {
   		if (status == google.maps.places.PlacesServiceStatus.OK) {
-  			console.log('yeah!!');
+  			console.log('Successfully located places.');
   			self.markers.removeAll();
   			console.log('removed markers');
     		for (var i = 0; i < results.length; i++) {
     			newPlace = results[i];
-    			console.log(newPlace);
       			self.markers.push(new marker(newPlace.geometry.location, newPlace.name, newPlace.formatted_address));
     		}
     		self.setMarkers();
+  		}
+  		else {
+  			console.log("Searching for places was not successful for the following reason: " + status);
+  			alert("Searching for places was not successful for the following reason: " + status);
   		}
   	}
 
@@ -143,7 +144,7 @@ function viewModel() {
     				if(textStatus === "timeout") {
     					self.photos.removeAll(); //Remove photos from feed and place image holder for no photos
     					self.photos.push(new flickrPhoto('assets/images/photo-holder.png'));
-        				console.log("Could not connect to Flickr API");
+        				console.log("Could not connect to Flickr API. Your internet may be disconnected or it took too long for a response.");
     				}
 				}
 			});
@@ -159,20 +160,9 @@ function viewModel() {
 			infoWindow.setContent("<div class='infoWindow'><h5>" + this.title + "</h5><p>" + this.address + "</p></div>");
 			infoWindow.open(map, this);
   		}
-  		// place.getPhotos();
-  		// setTimeout(function() {console.log(place.hasPhotos)}, 100);
-  		console.log(place.hasPhotos());
   		//success function for flickr feed ajax request
 		jsonFlickrFeed = function (data) {
 			var photos = data.items; //returns json feed of photos
-			if (data.items.length > 0) {
-				place.hasPhotos(true);
-			}
-			else {
-				place.hasPhotos(false);
-			}
-			console.log("Do we have?" + place.hasPhotos());
-			console.log(photos);
 			var photoLinks = [];
 			for (var i = 0; i < photos.length; i++) {
 				photoLinks.push(photos[i].media.m); //get just the links from all photos
@@ -181,7 +171,7 @@ function viewModel() {
 			self.photos.removeAll();
 			if (photoLinks.length == 0) {
 				self.photos.push(new flickrPhoto('assets/images/photo-holder.png'));
-				place.hasPhotos(false);
+				console.log('No photos were found for the selected location.')
 			}
 			else {
 				for (var link in photoLinks) {
@@ -206,7 +196,6 @@ function viewModel() {
 	google.maps.event.addDomListener(window, 'load', initialize());
 
 };
-
 
 $(function() {
 	vm = new viewModel();
