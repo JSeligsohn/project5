@@ -15,6 +15,10 @@
     "grunt-express": "~1.0.0-beta2",
     "grunt-gh-pages": "^0.9.1",
     "grunt-open": "~0.2.1",
+    "grunt-contrib-copy": "0.4.x",
+    "grunt-contrib-clean": "0.5.x",
+    "grunt-contrib-cssmin": "0.6.x",
+    "grunt-contrib-uglify": "0.2.x",
     "matchdep": "~0.1.2"
   }
 }

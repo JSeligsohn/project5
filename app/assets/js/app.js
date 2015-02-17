@@ -88,7 +88,7 @@ function viewModel() {
   	self.currentPhoto = ko.observable({name: 'Nowhere'});
 
  	// Stores the photos to show; default is a placeholder photo
-  	self.photos = ko.observableArray([new flickrPhoto('assets/images/photo-holder.png')]);
+  	self.photos = ko.observableArray([new flickrPhoto('images/photo-holder.png')]);
 
   	//Fired when search bar is submitted. Goes to new neighborhood and updates map.
   	self.submitForm = function() {
@@ -126,7 +126,7 @@ function viewModel() {
 		var place = new google.maps.Marker({
 		  position: myLatlng,
 		  title: title,
-		  icon: "assets/images/tree.png",
+		  icon: "images/tree.png",
 		  hasPhotos: ko.observable()
 		});
 		place.address = address;
@@ -143,7 +143,7 @@ function viewModel() {
 				error: function (jqXHR, textStatus, errorThrown){
     				if(textStatus === "timeout") {
     					self.photos.removeAll(); //Remove photos from feed and place image holder for no photos
-    					self.photos.push(new flickrPhoto('assets/images/photo-holder.png'));
+    					self.photos.push(new flickrPhoto('images/photo-holder.png'));
         				console.log("Could not connect to Flickr API. Your internet may be disconnected or it took too long for a response.");
     				}
 				}
@@ -170,7 +170,7 @@ function viewModel() {
 			console.log(photoLinks);
 			self.photos.removeAll();
 			if (photoLinks.length == 0) {
-				self.photos.push(new flickrPhoto('assets/images/photo-holder.png'));
+				self.photos.push(new flickrPhoto('images/photo-holder.png'));
 				console.log('No photos were found for the selected location.')
 			}
 			else {
