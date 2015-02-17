@@ -79,6 +79,8 @@ function viewModel() {
 			google.maps.event.addListener(mark, 'click', function() {
 				this.getPhotos();
 				this.highlightPlace();
+				//When clicking on marker, roll-up the listview if it's open
+				conditional_roll_up();
 			});
 		}
 	};
@@ -237,16 +239,38 @@ function flickrPhoto(link) {
 	};
 }
 
-//Roll up
 
-$('#js-roll-up').click(function() {
+//Toggle list view roll-up
+function roll_up() {
 	$('.list-view ul').toggleClass('rolled-up', 400, "easeInOutSine");
 	$('#js-roll-up span').toggleClass('glyphicon-triangle-top').toggleClass('glyphicon-triangle-bottom');
+}
+
+
+//Call roll-up for list-view when triangle is clicked
+$('#js-roll-up').click(function() {
+	roll_up();
 });
 
+//Conditional roll-up for when it's rolled-down 
+function conditional_roll_up() {
+	if (!$('.list-view ul').hasClass('rolled-up')) {
+		roll_up();
+	}
+}
+
+//Toggle photo viewer visible
 $('#js-photo-roll').click(function() {
 	$('.photo-view').toggleClass('photos-visible', 400, "easeInOutSine");
 })
+
+//At smaller viewports, automatically roll-up list-view
+$(document).ready(function() {
+	console.log($(window).width());
+	if ($(window).width() < 950) {
+		roll_up();
+	}
+});
 
 
 
