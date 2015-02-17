@@ -7190,7 +7190,7 @@ body {
 }
 @media screen and (max-width: 600px) {
   .list-view {
-    top: 175px;
+    bottom: 0;
   }
 }
 .list-view ul {
