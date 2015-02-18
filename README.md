@@ -1,5 +1,5 @@
 ##How to use:
-You can view the live project at [http://jonathanseligsohn.com/project5/build](jonathanseligsohn.com/project5/build).
+You can view the live project at [http://jonathanseligsohn.com/project5/build](http://jonathanseligsohn.com/project5/build).
 Search for your favorite neighborhood. A list of nearby parks will appear.
 You can view photos of a particular park by clicking on the park in the list or map, and then click on the "photos" icon.
 
@@ -25,5 +25,8 @@ When completed, you'll be able to run the various Grunt commands provided from t
 ### Available Grunt Commands
 
 * `grunt` — Compile assets when file changes are made
-* `grunt serve` — Compile assets when file changes are made and start up a local server
-* `grunt build` — Create minified assets that are used on non-development environments and push to live site
+* `grunt serve` — Compile assets when file changes are made and start up a local server (point your browser to localhost:9000/assets)
+* `grunt build` — Create minified assets that are used on non-development environments and push to live site (can also be viewed at localhost:9000/build)
+
+###Development vs. Production
+Development files are found in `app/assets` and minified, production-ready files are found in `app/build`. 
