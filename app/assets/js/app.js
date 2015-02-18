@@ -9,8 +9,12 @@ function viewModel() {
   	self.markers = ko.observableArray([]);
   	self.currentPlace = ko.observable();
 
-  	// Set map to searched location 
-  	// @param loc is search string, which is converted into Lat-Long
+  	/*Set map to searched location 
+  	  @param loc is search string, which is converted into Lat-Long 
+  	  using Google's Geocoder
+  	  Returns a location that is used to create a new map marker if successful;
+  	  otherwise alerts and prints an error to the console.
+  	*/
   	self.geoCodeMaker = function(loc) {
 		geocoder.geocode( { 'address': loc}, function(results, status) {
 	    	if (status == google.maps.GeocoderStatus.OK) {
@@ -43,6 +47,7 @@ function viewModel() {
   	});
 
   	// Function to search for place and nearby parks
+  	// @param searchPlace is place to search for nearby parks
   	self.request = function(searchPlace){
   		return {
 			location: searchPlace,
@@ -52,7 +57,14 @@ function viewModel() {
 		};
 	};
 
-	// For each marker, place it on map and retrieve photos from Flickr feed.
+	/*
+	  For each marker in self.markers, 
+	  place it on map, and add a click event listener that:
+	    sets self.currentPlace() to that marker,
+	    gets photos from Flickr,
+	    highlights the place on the listview and shows its infoWindow,
+	    and the marker begins to bounce.
+	*/
 	self.setMarkers = function() {
 		for (var i = 0; i < self.markers().length; i++) {
 			var mark = self.markers()[i];
@@ -68,7 +80,10 @@ function viewModel() {
 		}
 	};
 
-	//Gets the map started with places - defaults to New York
+	/*
+	  Sets the map to initial place - defaults to New York,
+	  and searches for nearby parks.
+	*/
 	function initialize() {
 		infoWindow = new google.maps.InfoWindow();
 		map = new google.maps.Map(document.getElementById('map-canvas'), self.mapOptions());
@@ -76,6 +91,7 @@ function viewModel() {
   	};
 
   	//Look for places of interest in the given neighborhood
+  	//using Google Maps' PlacesService
   	function searchNeighborhood(neighborhood) {
   		if (neighborhood) {
   			var service = new google.maps.places.PlacesService(map);
@@ -84,24 +100,11 @@ function viewModel() {
   		}
   	};
 
-  	//Holds name of the current place who's photos are being shown
-  	self.currentPhoto = ko.observable({name: 'Nowhere'});
-
- 	// Stores the photos to show; default is a placeholder photo
-  	self.photos = ko.observableArray([new flickrPhoto('images/photo-holder.png')]);
-
-  	//Fired when search bar is submitted. Goes to new neighborhood and updates map.
-  	self.submitForm = function() {
-  		console.log('Searching...');
-  		loc = self.location();
-  		console.log(loc);
-  		self.geoCodeMaker(loc);
-  		setTimeout(function() {
-  			searchNeighborhood(self.geolocation());
-  		}, 500);
-  	};
-
-  	//Callback for neighborhood search
+  	/*
+  	  Callback for searchNeighborhood()
+  	  If successful, sets map with markers for places of interest
+  	  If fails, alerts and logs to console an appropriate error message.
+  	*/
   	function searchCallback(results, status) {
   		if (status == google.maps.places.PlacesServiceStatus.OK) {
   			console.log('Successfully located places.');
@@ -119,7 +122,28 @@ function viewModel() {
   		}
   	}
 
-  	//Creates a new map marker with given position
+  	//Holds name of the current place whose photos are being shown
+  	self.currentPhoto = ko.observable({name: 'Nowhere'});
+
+ 	//Stores the photos to show; default is a placeholder photo
+  	self.photos = ko.observableArray([new flickrPhoto('images/photo-holder.png')]);
+
+  	//Fired when search bar is submitted. Goes to new neighborhood and updates map.
+  	self.submitForm = function() {
+  		console.log('Searching...');
+  		loc = self.location();
+  		console.log(loc);
+  		self.geoCodeMaker(loc);
+  		//Wait for geoCodeMaker to finish before searching for places of interest
+  		setTimeout(function() {
+  			searchNeighborhood(self.geolocation());
+  		}, 500);
+  	};
+
+  	/*
+  	  Creates and returns a new map marker with given position, title, and address.
+  	  Additional functions are described below.
+  	*/
 	function marker(pos, title, address) {
 		var myLatlng = pos;
 		console.log(myLatlng);
@@ -130,7 +154,7 @@ function viewModel() {
 		  hasPhotos: ko.observable()
 		});
 		place.address = address;
-		//Get flickr photos from feed based on title of marker
+		//Get flickr photos from feed based on title of marker using AJAX
 		place.getPhotos = function() { 		
 		// Jump to marker with title
 	  		var tag = title;
@@ -150,17 +174,15 @@ function viewModel() {
 			});
 
 		};
-		place.output = function() {
-			console.log("Has Photos?" + place.hasPhotos());
-		}
 		//When click on place, highlights it on map and shows infoWindow
 		place.highlightPlace = function() {
 			console.log(this.position);
-	  		map.panTo(this.position);
+	  		// map.panTo(this.position);
 			infoWindow.setContent("<div class='infoWindow'><h5>" + this.title + "</h5><p>" + this.address + "</p></div>");
 			infoWindow.open(map, this);
   		}
-  		//success function for flickr feed ajax request
+  		//Success function for flickr feed ajax request.
+  		//Returns a set of photo links to populate photo listview or error message if no photos found.
 		jsonFlickrFeed = function (data) {
 			var photos = data.items; //returns json feed of photos
 			var photoLinks = [];
@@ -168,7 +190,7 @@ function viewModel() {
 				photoLinks.push(photos[i].media.m); //get just the links from all photos
 			}
 			console.log(photoLinks);
-			self.photos.removeAll();
+			self.photos.removeAll(); //Clears the current photo list before populating with new photos
 			if (photoLinks.length == 0) {
 				self.photos.push(new flickrPhoto('images/photo-holder.png'));
 				console.log('No photos were found for the selected location.')
@@ -197,6 +219,7 @@ function viewModel() {
 
 };
 
+//Sets up our ViewModel using Knockout.js
 $(function() {
 	vm = new viewModel();
 	ko.applyBindings(vm);
@@ -222,13 +245,6 @@ $('#js-roll-up').click(function() {
 	roll_up();
 });
 
-//Conditional roll-up for when it's rolled-down 
-// function conditional_roll_up() {
-// 	if (!$('.list-view ul').hasClass('rolled-up')) {
-// 		roll_up();
-// 	}
-// }
-
 //Toggle photo viewer visible
 $('#js-photo-roll').click(function() {
 	$('.photo-view').toggleClass('photos-visible', 400, "easeInOutSine");
@@ -242,6 +258,7 @@ $(document).ready(function() {
 	}
 });
 
+//Clicking anywhere on searchbar allows user to enter search term
 $('#js-search-bar').click(function() {
 	$('#js-search-bar input').focus();
 });
