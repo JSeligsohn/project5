@@ -2,9 +2,18 @@ function viewModel() {
     var self = this;
     var map;
     var infoWindow;
-    self.geolocation = ko.observable();
-    var geocoder = new google.maps.Geocoder();
-    var newYork = new google.maps.LatLng(40.7776432, -73.9571934);
+    var geocoder;
+    self.newYork = ko.observable();
+    self.googleMapsWorking = ko.observable();
+    if (typeof google == 'undefined') {
+        self.googleMapsWorking(false);
+        console.log('Unable to reach Google Maps API. Try again later.');
+    }
+    else {
+        console.log('Successfuly connected to Google Maps API.');
+        self.googleMapsWorking(true);
+    }
+    self.geolocation = ko.observable(false);
     self.location = ko.observable('New York');
     self.markers = ko.observableArray([]);
     self.currentPlace = ko.observable();
@@ -39,7 +48,7 @@ function viewModel() {
         return {
             zoom: 13,
             disableDefaultUI: true,
-            center: newYork,
+            center: self.newYork(),
             draggable: true
         };
     });
@@ -82,10 +91,13 @@ function viewModel() {
       Sets the map to initial place - defaults to New York,
       and searches for nearby parks.
     */
+
     function initialize() {
+        geocoder = new google.maps.Geocoder();
+        self.newYork(new google.maps.LatLng(40.7776432, -73.9571934));
         infoWindow = new google.maps.InfoWindow();
         map = new google.maps.Map(document.getElementById('map-canvas'), self.mapOptions());
-        searchNeighborhood(newYork);
+        searchNeighborhood(self.newYork());
     }
 
     //Look for places of interest in the given neighborhood
@@ -107,7 +119,6 @@ function viewModel() {
         if (status == google.maps.places.PlacesServiceStatus.OK) {
             console.log('Successfully located places.');
             self.markers.removeAll();
-            console.log('removed markers');
             for (var i = 0; i < results.length; i++) {
                 newPlace = results[i];
                 self.markers.push(new marker(newPlace.geometry.location, newPlace.name, newPlace.formatted_address));
@@ -144,7 +155,6 @@ function viewModel() {
     */
     function marker(pos, title, address) {
         var myLatlng = pos;
-        console.log(myLatlng);
         var place = new google.maps.Marker({
           position: myLatlng,
           title: title,
@@ -213,8 +223,9 @@ function viewModel() {
         return place;
     }
 
-    google.maps.event.addDomListener(window, 'load', initialize());
-
+    if (self.googleMapsWorking()) {
+        google.maps.event.addDomListener(window, 'load', initialize());
+    }
 }
 
 //Sets up our ViewModel using Knockout.js
@@ -250,7 +261,6 @@ $('#js-photo-roll').click(function() {
 
 //At smaller viewports, automatically roll-up list-view
 $(document).ready(function() {
-    console.log($(window).width());
     if ($(window).width() < 950) {
         roll_up();
     }
